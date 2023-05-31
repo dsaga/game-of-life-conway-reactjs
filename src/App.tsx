@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { Game } from "./components/Game";
+import { Game } from "./components/game/Game";
 
 const GlobalStyle = createGlobalStyle`
   body {
