@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SelectRange } from "./SelectRange";
+import { SelectRange } from "../common/SelectRange";
 import { ICreateStageProps } from "./Game";
 import { ActionItem, IntroMessage } from "./GameControlls.styles";
 

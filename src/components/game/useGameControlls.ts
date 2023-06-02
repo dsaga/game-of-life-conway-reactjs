@@ -4,6 +4,7 @@ export function useGameControlls() {
   const [isAutoPlaying, setIsAutoPlaying] = React.useState<boolean>(false);
   const currentInterval = React.useRef<number | null>(null);
   const [currentGeneration, setCurrentGeneration] = React.useState<number>(0);
+  const [stageSize, setStageSize] = React.useState<number>(0);
 
   const startAutoPlay = () => {
     const interval = setInterval(() => {
@@ -19,7 +20,6 @@ export function useGameControlls() {
     }
   };
 
-
   React.useEffect(() => {
     if (isAutoPlaying) {
       startAutoPlay();
@@ -32,6 +32,12 @@ export function useGameControlls() {
     };
   }, [isAutoPlaying]);
 
-
-  return { isAutoPlaying, setIsAutoPlaying, currentGeneration, setCurrentGeneration };
+  return {
+    isAutoPlaying,
+    setIsAutoPlaying,
+    currentGeneration,
+    setCurrentGeneration,
+    stageSize,
+    setStageSize
+  };
 }

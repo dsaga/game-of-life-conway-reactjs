@@ -2,8 +2,8 @@ import * as React from "react";
 import { Stage } from "../stage/Stage";
 import { GameControlls } from "./GameControlls";
 import { useGameControlls } from "./useGameControlls";
-import { makeGameLogic } from ".";
 import { createCellsFromStageSize } from "./utils";
+import { useGameLogic } from "./useGameLogic";
 
 export type GameCellPos = {
   x: number;
@@ -11,26 +11,21 @@ export type GameCellPos = {
   checked: boolean;
 };
 
-export type UpdateCellProps = {
-  cell: GameCellPos;
-  cells: GameCellPos[];
-  override: boolean | null;
-};
-
 export interface ICreateStageProps {
   stageSize: number;
 }
 
 export function Game() {
-  const [cellHistory, setCellHistory] = React.useState<{
-    [gen: number]: GameCellPos[];
-  }>({});
-  const [cells, setCells] = React.useState<GameCellPos[]>([]);
-  const [stageSize, setStageSize] = React.useState<number>(0);
+  const {
+    currentGeneration,
+    setCurrentGeneration,
+    isAutoPlaying,
+    setIsAutoPlaying,
+    stageSize,
+    setStageSize,
+  } = useGameControlls();
 
-  const { currentGeneration, setCurrentGeneration, isAutoPlaying, setIsAutoPlaying } =
-    useGameControlls();
-
+  const { cells, cellHistory, resetCells, updateCell, setCells } = useGameLogic(currentGeneration);
 
   const handleNextGen = () => {
     setCurrentGeneration(currentGeneration + 1);
@@ -38,25 +33,12 @@ export function Game() {
 
   const handleCreateStage = ({ stageSize }: ICreateStageProps) => {
     // make sure to restart everything
-    setCells([]);
-    setCellHistory({});
+    resetCells();
     setIsAutoPlaying(false);
     setCurrentGeneration(0);
     setStageSize(stageSize);
   };
 
-
-  const updateCell = ({ cell, cells, override }: UpdateCellProps) => {
-    return cells.map((currentCell) => {
-      if (currentCell.x === cell.x && currentCell.y === cell.y) {
-        return {
-          ...currentCell,
-          checked: override !== null ? override : !currentCell.checked,
-        };
-      }
-      return currentCell;
-    });
-  };
 
   const handleUpdateCell = (
     cell: GameCellPos,
@@ -71,29 +53,10 @@ export function Game() {
     // on every update validate neighbours (find)
   };
 
-
   React.useEffect(() => {
-
-    if (stageSize >= 2)
-      setCells(createCellsFromStageSize(stageSize));
-
+    if (stageSize >= 2) setCells(createCellsFromStageSize(stageSize));
   }, [stageSize]);
 
-  React.useEffect(() => {
-    if (cellHistory[currentGeneration]) {
-      setCells(cellHistory[currentGeneration]);
-    } else if (
-      cellHistory[currentGeneration] === undefined &&
-      cells.length > 0
-    ) {
-
-      const gameLogic = makeGameLogic(cells);
-      const currentCells = gameLogic.performGameLogic();
-
-      setCells(currentCells);
-      setCellHistory({ ...cellHistory, [currentGeneration]: currentCells });
-    }
-  }, [currentGeneration]);
 
   return (
     <>
